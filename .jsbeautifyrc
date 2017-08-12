@@ -1,0 +1,20 @@
+{
+  "end_with_newline": true,
+  "max_preserve_newlines": 2,
+  "preserve_newlines": true,
+  "js": {
+    "indent_with_tabs": true,
+    "indent_size": 4
+  },
+  "css": {
+    "indent_size": 2,
+    "newline_between_rules": true,
+    "selector_separator_newline": true,
+    "space_around_combinator": true
+  },
+  "html": {
+    "indent_size": 2,
+    "unformatted": [],
+    "wrap_attributes": "force-aligned"
+  }
+}
