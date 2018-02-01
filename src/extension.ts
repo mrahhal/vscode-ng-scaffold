@@ -3,6 +3,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
+	registerScaffold(context);
+	registertransformDto(context);
+}
+
+function registerScaffold(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('mrng.scaffold', (uri?: vscode.Uri) => {
 		if (!uri) {
 			return;
@@ -35,7 +40,66 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 		});
 	});
+
 	context.subscriptions.push(disposable);
+}
+
+function registertransformDto(context: vscode.ExtensionContext) {
+	const disposable = vscode.commands.registerCommand('mrng.transformDto', (uri?: vscode.Uri) => {
+		let documentPromise: Thenable<vscode.TextDocument>;
+		if (!uri) {
+			documentPromise = Promise.resolve(vscode.window.activeTextEditor.document);
+		} else {
+			documentPromise = vscode.workspace.openTextDocument(uri);
+		}
+
+		documentPromise.then(document => vscode.window.showTextDocument(document)).then(editor => {
+			const document = editor.document;
+
+			const firstLine = editor.document.lineAt(0);
+			const lastLine = editor.document.lineAt(document.lineCount - 1);
+
+			// Full range first
+			let range = new vscode.Range(0,
+				firstLine.range.start.character,
+				document.lineCount - 1,
+				lastLine.range.end.character);
+
+			// If there's a selection..
+			const selection = editor.selection;
+			if (!selection.isEmpty) {
+				range = new vscode.Range(selection.start, selection.end);
+			}
+
+			const text = document.getText(range);
+
+			return editor.edit(textEdit => {
+				textEdit.replace(
+					range,
+					transformFromCsharp(text));
+			});
+		});
+	});
+
+	context.subscriptions.push(disposable);
+}
+
+function transformFromCsharp(text: string): string {
+	return text
+		.replace(/public /g, '')
+		.replace(/class/g, 'export interface')
+		.replace(/Dto/g, '')
+		.replace(/ { get; set; }/g, ';')
+		.replace(/:/g, 'extends')
+		.replace(/(.+) (.+);/g, (a, b, c) => {
+			return toCamelCase(c) + ': ' + b + ';';
+		})
+		.replace(/\bint\b/g, 'number');
+}
+
+function toCamelCase(value: string): string {
+	const first = value.charAt(0).toLowerCase();
+	return first + value.substring(1);
 }
 
 export function deactivate() {

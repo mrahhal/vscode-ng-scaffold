@@ -11,7 +11,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:mrng.scaffold"
+    "onCommand:mrng.scaffold",
+    "onCommand:mrng.transformDto"
   ],
   "main": "./out/src/extension",
   "contributes": {
@@ -19,12 +20,20 @@
       {
         "command": "mrng.scaffold",
         "title": "Angular scaffold"
+      },
+      {
+        "command": "mrng.transformDto",
+        "title": "Angular transform dto"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "command": "mrng.scaffold",
+          "group": "mrng"
+        },
+        {
+          "command": "mrng.transformDto",
           "group": "mrng"
         }
       ]
