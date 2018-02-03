@@ -94,7 +94,8 @@ function transformFromCsharp(text: string): string {
 		.replace(/(.+) (.+);/g, (a, b, c) => {
 			return toCamelCase(c) + ': ' + b + ';';
 		})
-		.replace(/\bint\b/g, 'number');
+		.replace(/\bint\b/g, 'number')
+		.replace(/List<(.+)>/g, '$1[]');
 }
 
 function toCamelCase(value: string): string {
