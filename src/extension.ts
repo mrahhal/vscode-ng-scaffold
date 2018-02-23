@@ -96,7 +96,8 @@ function transformFromCsharp(text: string): string {
 		})
 		.replace(/\bint\b/g, 'number')
 		.replace(/List<(.+)>/g, '$1[]')
-		.replace(/bool/g, 'boolean');
+		.replace(/bool/g, 'boolean')
+		.replace(/\?/g, ' | null');
 }
 
 function toCamelCase(value: string): string {
