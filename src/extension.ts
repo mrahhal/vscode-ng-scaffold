@@ -95,9 +95,12 @@ function transformFromCsharp(text: string): string {
 			return toCamelCase(c) + ': ' + b + ';';
 		})
 		.replace(/\bint\b/g, 'number')
+		.replace(/decimal/g, 'number')
 		.replace(/List<(.+)>/g, '$1[]')
 		.replace(/bool/g, 'boolean')
-		.replace(/\?/g, ' | null');
+		.replace(/\?/g, ' | null')
+		.replace(/DateTimeOffset/g, 'string')
+		.replace(/DateTime/g, 'string');
 }
 
 function toCamelCase(value: string): string {
