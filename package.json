@@ -2,7 +2,7 @@
   "name": "vscode-ng-scaffold",
   "displayName": "Scaffolding for angular",
   "description": "Scaffolding for angular",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "repository": "https://github.com/mrahhal/vscode-ng-scaffold",
   "publisher": "mrahhal",
   "engines": {
