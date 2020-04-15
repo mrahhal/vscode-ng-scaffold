@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { camel, constant, pascal } from 'case';
 
 export function activate(context: vscode.ExtensionContext) {
 	registerScaffold(context);
@@ -26,11 +27,40 @@ function registerScaffold(context: vscode.ExtensionContext) {
 			const f1 = path.join(folder, `${value}.component.ts`);
 			const f2 = path.join(folder, `${value}.html`);
 			const f3 = path.join(folder, `${value}.scss`);
-			const files = [f1, f2, f3];
+			const f4 = path.join(folder, `${value}.ts`);
+			const files = [f2, f3];
 
 			for (const file of files) {
 				fs.appendFileSync(file, '');
 			}
+
+			fs.appendFileSync(f1,
+`import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+
+@Component({
+	selector: '${value}',
+	templateUrl: './${value}.html',
+	styleUrls: ['./${value}.scss'],
+	encapsulation: ViewEncapsulation.None,
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'class': '${value}',
+	},
+})
+export class ${pascal(value)}Component implements OnInit {
+	constructor() { }
+
+	ngOnInit() { }
+};
+`);
+
+			fs.appendFileSync(f4,
+`import { ${pascal(value)}Component } from './${value}.component';
+
+export const ${constant(value)}_DECLARATIONS: any[] = [
+	${pascal(value)}Component,
+];
+`);
 
 			return vscode.workspace.openTextDocument(f1)
 				.then((textDocument) => {
@@ -92,7 +122,7 @@ function transformFromCsharp(text: string): string {
 		.replace(/ { get; set; }/g, ';')
 		.replace(/:/g, 'extends')
 		.replace(/(.+) (.+);/g, (a, b, c) => {
-			return toCamelCase(c) + ': ' + b + ';';
+			return camel(c) + ': ' + b + ';';
 		})
 		.replace(/\bint\b/g, 'number')
 		.replace(/float/g, 'number')
@@ -103,11 +133,6 @@ function transformFromCsharp(text: string): string {
 		.replace(/\?/g, ' | null')
 		.replace(/DateTimeOffset/g, 'string')
 		.replace(/DateTime/g, 'string');
-}
-
-function toCamelCase(value: string): string {
-	const first = value.charAt(0).toLowerCase();
-	return first + value.substring(1);
 }
 
 export function deactivate() {
